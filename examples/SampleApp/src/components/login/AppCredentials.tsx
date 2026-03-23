@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
@@ -35,9 +36,9 @@ const AppCredentials: React.FC = () => {
   const [storedRegion, setStoredRegion] = useState<string>('US');
 
   // These are the *editable* states bound to the TextInput fields
-  const [appId, setAppId] = useState<string>('');
-  const [authKey, setAuthKey] = useState<string>('');
-  const [selectedRegion, setSelectedRegion] = useState<string>('US');
+  const [appId, setAppId] = useState<string>('1676766e5e427d684');
+  const [authKey, setAuthKey] = useState<string>('cf2147f36f54d5af4dccf7ce1981fe1146b15410');
+  const [selectedRegion, setSelectedRegion] = useState<string>('IN');
 
   // Toast state for showing error messages
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -181,213 +182,36 @@ const AppCredentials: React.FC = () => {
 
   return (
     <View
-      style={[styles.container, { backgroundColor: theme.color.background2 }]}
+      style={[styles.container, { backgroundColor: theme.color.background2}]}
     >
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={keyboardBehavior} // Use dynamic behavior
-        keyboardVerticalOffset={keyboardVerticalOffset}
-      >
         <View style={styles.contentContainer}>
-          <ScrollView
-            contentContainerStyle={styles.scrollContent}
-            keyboardShouldPersistTaps="handled"
+          <Text
+            style={[
+              theme.typography.heading2.bold,
+              {
+                color: theme.color.textPrimary,
+                marginBottom: 20,
+                alignSelf: 'center',
+              },
+            ]}
           >
-            {/* Header/Logo */}
-            <View style={styles.logoContainer}>
-              <Image
-                source={
-                  mode === 'dark'
-                    ? require('../../assets/icons/Dark.png')
-                    : require('../../assets/icons/Light.png')
-                }
-                style={{
-                  width: width * 0.25,
-                  height: width * 0.25,
-                  resizeMode: 'contain',
-                }}
-              />
-            </View>
+            {t('Welcome to Nks Chat App !')}
+          </Text>
+           <Text
+            style={[
+              theme.typography.heading2.bold,
+              {
+                color: theme.color.textPrimary,
+                marginTop: 10,
+                marginBottom: 20,
+                alignSelf: 'center',
+              },
+            ]}
+          >
+            {('Hit continue to proceed')}
+          </Text>
 
-            {/* Title */}
-            <Text
-              style={[
-                theme.typography.heading2.bold,
-                {
-                  color: theme.color.textPrimary,
-                  marginBottom: 20,
-                  alignSelf: 'center',
-                },
-              ]}
-            >
-              {t('APP_CREDENTIALS')}
-            </Text>
-
-            {/* Region Selector */}
-            <View style={styles.inputContainer}>
-              <Text
-                style={[
-                  theme.typography.caption1.medium,
-                  { color: theme.color.textPrimary, marginBottom: 10 },
-                ]}
-              >
-                {t('REGION')}
-              </Text>
-              <View style={styles.regionRow}>
-                {/* US */}
-                <TouchableOpacity
-                  style={[
-                    styles.flagContainer,
-                    {
-                      backgroundColor:
-                        selectedRegion === 'US'
-                          ? theme.color.extendedPrimary50
-                          : theme.color.background1,
-                      borderColor:
-                        selectedRegion === 'US'
-                          ? theme.color.borderHighlight
-                          : theme.color.borderDefault,
-                    },
-                  ]}
-                  onPress={() => setSelectedRegion('US')}
-                >
-                  <View style={styles.flagInnerContainer}>
-                    <Image
-                      source={require('../../assets/icons/US.png')}
-                      style={styles.flagImage}
-                    />
-                    <Text
-                      style={[
-                        theme.typography.button.medium,
-                        { color: theme.color.textSecondary },
-                      ]}
-                    >
-                      US
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-
-                {/* EU */}
-                <TouchableOpacity
-                  style={[
-                    styles.flagContainer,
-                    {
-                      backgroundColor:
-                        selectedRegion === 'EU'
-                          ? theme.color.extendedPrimary50
-                          : theme.color.background1,
-                      borderColor:
-                        selectedRegion === 'EU'
-                          ? theme.color.borderHighlight
-                          : theme.color.borderDefault,
-                    },
-                  ]}
-                  onPress={() => setSelectedRegion('EU')}
-                >
-                  <View style={styles.flagInnerContainer}>
-                    <Image
-                      source={require('../../assets/icons/EU.png')}
-                      style={styles.flagImage}
-                    />
-                    <Text
-                      style={[
-                        theme.typography.button.medium,
-                        { color: theme.color.textSecondary },
-                      ]}
-                    >
-                      EU
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-
-                {/* IN */}
-                <TouchableOpacity
-                  style={[
-                    styles.flagContainer,
-                    {
-                      backgroundColor:
-                        selectedRegion === 'IN'
-                          ? theme.color.extendedPrimary50
-                          : theme.color.background1,
-                      borderColor:
-                        selectedRegion === 'IN'
-                          ? theme.color.borderHighlight
-                          : theme.color.borderDefault,
-                    },
-                  ]}
-                  onPress={() => setSelectedRegion('IN')}
-                >
-                  <View style={styles.flagInnerContainer}>
-                    <Image
-                      source={require('../../assets/icons/India.png')}
-                      style={styles.flagImage}
-                    />
-                    <Text
-                      style={[
-                        theme.typography.button.medium,
-                        { color: theme.color.textSecondary },
-                      ]}
-                    >
-                      IN
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* App ID */}
-            <View style={styles.inputContainer}>
-              <Text
-                style={[
-                  theme.typography.caption1.medium,
-                  { color: theme.color.textPrimary, paddingBottom: 5 },
-                ]}
-              >
-                APP ID
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    borderColor: theme.color.borderLight,
-                    backgroundColor: theme.color.background2,
-                    color: theme.color.textPrimary,
-                  },
-                ]}
-                value={appId}
-                onChangeText={setAppId}
-                placeholder="Enter the App ID"
-                placeholderTextColor={theme.color.textTertiary}
-              />
-            </View>
-
-            {/* Auth Key */}
-            <View style={styles.inputContainer}>
-              <Text
-                style={[
-                  theme.typography.caption1.medium,
-                  { color: theme.color.textPrimary, paddingBottom: 5 },
-                ]}
-              >
-                Auth Key
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    borderColor: theme.color.borderLight,
-                    backgroundColor: theme.color.background2,
-                    color: theme.color.textPrimary,
-                  },
-                ]}
-                value={authKey}
-                onChangeText={setAuthKey}
-                placeholder="Enter the Auth Key"
-                placeholderTextColor={theme.color.textTertiary}
-              />
-            </View>
-          </ScrollView>
-
+          
           {/* Continue Button */}
           <View style={styles.buttonWrapper}>
             <TouchableOpacity
@@ -411,7 +235,6 @@ const AppCredentials: React.FC = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
       {/* Toast Message */}
       {toastMessage && (
         <View style={styles.toastContainer}>
@@ -487,7 +310,8 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
+    justifyContent: 'center'
   },
   scrollContent: {
     flexGrow: 1,
