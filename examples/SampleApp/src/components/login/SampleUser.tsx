@@ -209,18 +209,14 @@ const LoginScreen: React.FC = () => {
         >
           {/* App Logo */}
           <View style={styles.logoContainer}>
-            <Image
-              source={
-                mode === 'dark'
-                  ? require('../../assets/icons/Dark.png')
-                  : require('../../assets/icons/Light.png')
-              }
-              style={{
-                width: width * 0.25,
-                height: width * 0.25,
-                resizeMode: 'contain',
-              }}
-            />
+            <Text
+              style={[
+                theme.typography.heading1.bold,
+                { color: theme.color.primary },
+              ]}
+            >
+              Nks Chat
+            </Text>
           </View>
 
           {/* Title */}
@@ -234,113 +230,8 @@ const LoginScreen: React.FC = () => {
             Log In
           </Text>
 
-          {/* Subtitle */}
-          <Text
-            style={[
-              theme.typography.body.medium,
-              styles.subtitle,
-              { color: theme.color.textPrimary },
-            ]}
-          >
-            Choose a Sample User
-          </Text>
-
-          {/* Sample Users Grid */}
-          <View style={styles.userGridWrapper}>
-            {showSkeleton ? (
-              <Skeleton />
-            ) : (
-              <View style={styles.usersContainer}>
-                {gridData.map((item, index) => {
-                  // Render a blank view for dummy items
-                  if ('dummy' in item && item.dummy) {
-                    return (
-                      <View key={`dummy-${index}`} style={styles.userCard} />
-                    );
-                  }
-
-                  // Otherwise, render a user
-                  const user = item as CometChat.User;
-                  const isSelected = selectedUser === user.getUid();
-                  const firstName = user.getName();
-
-                  return (
-                    <Pressable
-                      key={user.getUid()}
-                      style={[
-                        styles.userCard,
-                        {
-                          borderWidth: isSelected ? 1.5 : 1,
-                          borderColor: isSelected
-                            ? theme.color.borderHighlight
-                            : theme.color.borderLight,
-                          backgroundColor: isSelected
-                            ? theme.color.extendedPrimary50
-                            : theme.color.background1,
-                        },
-                      ]}
-                      onPress={() => handleSelectUser(user)}
-                    >
-                      {/* Show the check icon ONLY if selected */}
-                      {isSelected && (
-                        <View style={styles.checkIconContainer}>
-                          <Icon
-                            icon={
-                              <Check
-                                color={theme.color.staticWhite}
-                                height={18}
-                                width={18}
-                              />
-                            }
-                          />
-                        </View>
-                      )}
-                      <CometChatAvatar
-                        name={user.getName()}
-                        image={getAvatarSource(user.getAvatar())}
-                      />
-                      {/* Display only the first name */}
-                      <Text
-                        style={[
-                          theme.typography.body.medium,
-                          styles.firstNameText,
-                          { color: theme.color.textPrimary },
-                        ]}
-                      >
-                        {firstName}
-                      </Text>
-                      <Text
-                        style={[
-                          theme.typography.caption1.regular,
-                          styles.uidText,
-                          { color: theme.color.textSecondary },
-                        ]}
-                      >
-                        {user.getUid()}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            )}
-          </View>
-
-          {/* Horizontal divider with "Or" in the middle */}
           <View style={styles.dividerRow}>
-            <View
-              style={[
-                styles.divider,
-                { borderColor: theme.color.borderDefault },
-              ]}
-            />
-            <Text
-              style={[
-                theme.typography.body.medium,
-                { color: theme.color.textTertiary },
-              ]}
-            >
-              Or
-            </Text>
+            
             <View
               style={[
                 styles.divider,
