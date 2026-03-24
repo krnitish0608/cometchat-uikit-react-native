@@ -215,7 +215,7 @@ const LoginScreen: React.FC = () => {
                 { color: theme.color.primary },
               ]}
             >
-              Nks Chat
+              Fast Chat
             </Text>
           </View>
 

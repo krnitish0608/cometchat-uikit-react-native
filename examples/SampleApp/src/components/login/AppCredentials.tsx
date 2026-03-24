@@ -195,7 +195,7 @@ const AppCredentials: React.FC = () => {
               },
             ]}
           >
-            {t('Welcome to Nks Chat App !')}
+            {t('Welcome to Fast Chat App !')}
           </Text>
            <Text
             style={[
