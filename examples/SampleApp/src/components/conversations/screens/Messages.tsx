@@ -12,6 +12,7 @@ import {
   Text,
   BackHandler,
   Platform,
+  KeyboardAvoidingView,
   AppState,
   AppStateStatus,
 } from 'react-native';
@@ -494,123 +495,122 @@ const Messages: React.FC<Props> = ({ route, navigation }) => {
 
   return (
     <CometChatThemeProvider theme={providerTheme}>
-      <View style={styles.flexOne}>
-        <CometChatMessageHeader
-          user={localUser}
-          group={group}
-          onBack={() => {
-            if (fromMention || fromMessagePrivately) {
-              navigation.goBack();
-            } else {
-              navigation.popToTop();
-            }
-          }}
-          showBackButton={true}
-          usersStatusVisibility={userAndFriendsPresence}
-          hideVoiceCallButton={
-            (user && !oneOnOneVoiceCalling) || (group && !groupVoiceConference)
-          }
-          hideVideoCallButton={
-            (user && !oneOnOneVideoCalling) || (group && !groupVideoConference)
-          }
-          options={options}
-        />
+      <KeyboardAvoidingView
+        style={styles.flexOne}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 50}
+      >
         <View style={styles.flexOne}>
-          <CometChatMessageList
-            key={messageListKey}
-            textFormatters={[getMentionsTap()]}
-            user={user}
+          <CometChatMessageHeader
+            user={localUser}
             group={group}
-            parentMessageId={parentMessageId}
-            // callback signature expects (messageObject, messageBubbleView)
-            onThreadRepliesPress={(messageObject, _messageBubbleView) => {
-              CometChatUIEventHandler.emitUIEvent?.(
-                CometChatUIEvents.hidePanel,
-                {
-                  alignment: 'composerBottom',
-                  child: () => null,
-                },
-              );
-              navigation.navigate('ThreadView', { message: messageObject, user, group });
+            onBack={() => {
+              if (fromMention || fromMessagePrivately) {
+                navigation.goBack();
+              } else {
+                navigation.popToTop();
+              }
             }}
-            hideReplyInThreadOption={!threadConversationAndReplies}
-            hideEditMessageOption={!editMessage}
-            hideDeleteMessageOption={!deleteMessage}
-            receiptsVisibility={messageDeliveryAndReadReceipts}
-            hideTranslateMessageOption={!messageTranslation}
-            hideReactionOption={!reactions}
-            hideMessagePrivatelyOption={!sendPrivateMessageToGroupMembers}
-            navigatedFromSearch={navigatedFromSearch}
-            showMarkAsUnreadOption={true}
-            startFromUnreadMessages={true}
+            showBackButton={true}
+            usersStatusVisibility={userAndFriendsPresence}
+            hideVoiceCallButton={
+              (user && !oneOnOneVoiceCalling) || (group && !groupVoiceConference)
+            }
+            hideVideoCallButton={
+              (user && !oneOnOneVideoCalling) || (group && !groupVideoConference)
+            }
+            options={options}
           />
-        </View>
+          <View style={styles.flexOne}>
+            <CometChatMessageList
+              key={messageListKey}
+              textFormatters={[getMentionsTap()]}
+              user={user}
+              group={group}
+              parentMessageId={parentMessageId}
+              // callback signature expects (messageObject, messageBubbleView)
+              onThreadRepliesPress={(messageObject, _messageBubbleView) => {
+                CometChatUIEventHandler.emitUIEvent?.(
+                  CometChatUIEvents.hidePanel,
+                  {
+                    alignment: 'composerBottom',
+                    child: () => null,
+                  },
+                );
+                navigation.navigate('ThreadView', { message: messageObject, user, group });
+              }}
+              hideReplyInThreadOption={!threadConversationAndReplies}
+              hideEditMessageOption={!editMessage}
+              hideDeleteMessageOption={!deleteMessage}
+              receiptsVisibility={messageDeliveryAndReadReceipts}
+              hideTranslateMessageOption={!messageTranslation}
+              hideReactionOption={!reactions}
+              hideMessagePrivatelyOption={!sendPrivateMessageToGroupMembers}
+              navigatedFromSearch={navigatedFromSearch}
+              showMarkAsUnreadOption={true}
+              startFromUnreadMessages={true}
+            />
+          </View>
 
-        {localUser?.getBlockedByMe() ? (
-          <View
-            style={[
-              styles.blockedContainer,
-              { backgroundColor: theme.color.background3 },
-            ]}
-          >
-            <Text
+          {localUser?.getBlockedByMe() ? (
+            <View
               style={[
-                theme.typography.button.regular,
-                {
-                  color: theme.color.textSecondary,
-                  textAlign: 'center',
-                  paddingBottom: 10,
-                },
+                styles.blockedContainer,
+                { backgroundColor: theme.color.background3 },
               ]}
-            >
-              {t('BLOCKED_USER_DESC')}
-            </Text>
-            <TouchableOpacity
-              onPress={() => unblock(localUser)}
-              style={[styles.button, { borderColor: theme.color.borderDefault }]}
             >
               <Text
                 style={[
-                  theme.typography.button.medium,
-                  styles.buttontext,
+                  theme.typography.button.regular,
                   {
-                    color: theme.color.textPrimary,
+                    color: theme.color.textSecondary,
+                    textAlign: 'center',
+                    paddingBottom: 10,
                   },
                 ]}
               >
-                {t('UNBLOCK')}
+                {t('BLOCKED_USER_DESC')}
               </Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <CometChatMessageComposer
-            key={messageComposerKey}
-            ref={messageComposerRef}
-            parentMessageId={parentMessageId}
-            user={localUser}
-            group={group}
-            keyboardAvoidingViewProps={{
-              ...(Platform.OS === 'android'
-                ? {}
-                : {
-                  behavior: 'padding',
-                }),
-            }}
-            disableTypingEvents={!typingIndicator}
-            hideImageAttachmentOption={!photosSharing}
-            hideVideoAttachmentOption={!videoSharing}
-            hideAudioAttachmentOption={!audioSharing}
-            hideFileAttachmentOption={!fileSharing}
-            hideCameraOption={!photosSharing}
-            disableMentions={!mentions}
-            hideStickersButton={!stickers}
-            hideCollaborativeDocumentOption={!collaborativeDocument}
-            hideCollaborativeWhiteboardOption={!collaborativeWhiteboard}
-            hidePollsAttachmentOption={!polls}
-            hideVoiceRecordingButton={!voiceNotes}
-          />
-        )}
-      </View>
+              <TouchableOpacity
+                onPress={() => unblock(localUser)}
+                style={[styles.button, { borderColor: theme.color.borderDefault }]}
+              >
+                <Text
+                  style={[
+                    theme.typography.button.medium,
+                    styles.buttontext,
+                    {
+                      color: theme.color.textPrimary,
+                    },
+                  ]}
+                >
+                  {t('UNBLOCK')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <CometChatMessageComposer
+              key={messageComposerKey}
+              ref={messageComposerRef}
+              parentMessageId={parentMessageId}
+              user={localUser}
+              group={group}
+              disableTypingEvents={!typingIndicator}
+              hideImageAttachmentOption={!photosSharing}
+              hideVideoAttachmentOption={!videoSharing}
+              hideAudioAttachmentOption={!audioSharing}
+              hideFileAttachmentOption={!fileSharing}
+              hideCameraOption={!photosSharing}
+              disableMentions={!mentions}
+              hideStickersButton={!stickers}
+              hideCollaborativeDocumentOption={!collaborativeDocument}
+              hideCollaborativeWhiteboardOption={!collaborativeWhiteboard}
+              hidePollsAttachmentOption={!polls}
+              hideVoiceRecordingButton={!voiceNotes}
+            />
+          )}
+        </View>
+      </KeyboardAvoidingView>
     </CometChatThemeProvider>
   );
 };
