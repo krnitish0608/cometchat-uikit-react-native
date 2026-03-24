@@ -12,9 +12,6 @@ import {
   Text,
   BackHandler,
   Platform,
-  Modal,
-  Animated,
-  Dimensions,
   AppState,
   AppStateStatus,
 } from 'react-native';
@@ -29,10 +26,7 @@ import {
   ChatConfigurator,
   useCometChatTranslation,
   Icon,
-  CometChatAIAssistantChatHistory,
-  CometChatAIAssistantTools,
   CometChatThemeProvider,
-  stopStreamingForRunId,
 } from '@cometchat/chat-uikit-react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../../../navigation/types';
@@ -43,8 +37,6 @@ import Info from '../../../assets/icons/Info';
 import {useActiveChat} from '../../../utils/ActiveChatContext';
 import { useConfig } from '../../../config/store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const { width } = Dimensions.get('window');
 
 type Props = StackScreenProps<RootStackParamList, 'Messages'>;
 
@@ -150,7 +142,6 @@ const Messages: React.FC<Props> = ({ route, navigation }) => {
   const [localUser, setLocalUser] = useState<CometChat.User | undefined>(user);
   const [messageListKey, setMessageListKey] = useState(0);
   const [messageComposerKey, setMessageComposerKey] = useState(0);
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   // Manage parentMessageId in parent component
   const [parentMessageId, setParentMessageId] = useState<string | undefined>(routeParentMessageId);
@@ -160,25 +151,6 @@ const Messages: React.FC<Props> = ({ route, navigation }) => {
 
   // Add ref to track streaming state
   const messageComposerRef = useRef<any>(null);
-
-  /** Animation state for drawer */
-  const slideAnim = useRef(new Animated.Value(width)).current;
-
-  useEffect(() => {
-    if (showHistoryModal) {
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(slideAnim, {
-        toValue: width,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [showHistoryModal, slideAnim]);
 
   /** Agentic user check */
   const isAgenticUser = useCallback((): boolean => {
@@ -195,7 +167,6 @@ const Messages: React.FC<Props> = ({ route, navigation }) => {
 
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
-        stopStreamingForRunId();
         if (messageComposerRef.current?.resetStreaming) {
           messageComposerRef.current.resetStreaming();
         }
@@ -371,37 +342,11 @@ const Messages: React.FC<Props> = ({ route, navigation }) => {
     setParentMessageId(undefined);
     setMessageListKey(prev => prev + 1);
     setMessageComposerKey(prev => prev + 1);
-    setShowHistoryModal(false);
     navigation.replace('Messages', {
       user,
       group,
     });
   }, [navigation, user, group]);
-
-  /** Open chat history modal */
-  const handleChatHistoryClick = useCallback(() => {
-    setShowHistoryModal(true);
-  }, []);
-
-  /** Handle history message click */
-  const handleHistoryMessageClick = useCallback(
-    (message: CometChat.BaseMessage) => {
-      if (messageComposerRef.current && messageComposerRef.current.stopStreaming) {
-        messageComposerRef.current.stopStreaming();
-      }
-      setShowHistoryModal(false);
-      setParentMessageId(message.getId().toString());
-      setMessageListKey(prev => prev + 1);
-      setMessageComposerKey(prev => prev + 1);
-    },
-    [],
-  );
-
-  /** Handle history error */
-  const handleChatHistoryError = useCallback(
-    (_error: CometChat.CometChatException) => {},
-    [],
-  );
 
   const unblock = async (userToUnblock: CometChat.User) => {
     let uid = userToUnblock.getUid();
@@ -568,10 +513,6 @@ const Messages: React.FC<Props> = ({ route, navigation }) => {
           hideVideoCallButton={
             (user && !oneOnOneVideoCalling) || (group && !groupVideoConference)
           }
-          hideChatHistoryButton={false}
-          hideNewChatButton={false}
-          onChatHistoryButtonClick={handleChatHistoryClick}
-          onNewChatButtonClick={handleNewChatClick}
           options={options}
         />
         <View style={styles.flexOne}>
@@ -599,44 +540,11 @@ const Messages: React.FC<Props> = ({ route, navigation }) => {
             hideTranslateMessageOption={!messageTranslation}
             hideReactionOption={!reactions}
             hideMessagePrivatelyOption={!sendPrivateMessageToGroupMembers}
-            aiAssistantTools={new CometChatAIAssistantTools({
-              getCurrentWeather: (args: any) => console.log('Weather args', args),
-            })}
-            streamingSpeed={10}
-            goToMessageId={messageId}
-            searchKeyword={searchKeyword}
             navigatedFromSearch={navigatedFromSearch}
             showMarkAsUnreadOption={true}
             startFromUnreadMessages={true}
           />
         </View>
-
-        {/* Chat History Drawer */}
-        {agentic && (
-          <Modal visible={showHistoryModal} transparent animationType="none" onRequestClose={() => setShowHistoryModal(false)}>
-            <View style={drawerStyles.backdrop}>
-              <Animated.View
-                style={[
-                  drawerStyles.drawer,
-                  {
-                    backgroundColor: theme.color.background1,
-                    paddingTop: Platform.OS === 'ios' ? insets.top : 0,
-                  },
-                  { transform: [{ translateX: slideAnim }] },
-                ]}
-              >
-                <CometChatAIAssistantChatHistory
-                  user={localUser}
-                  group={group}
-                  onClose={() => setShowHistoryModal(false)}
-                  onMessageClicked={handleHistoryMessageClick}
-                  onError={handleChatHistoryError}
-                  onNewChatButtonClick={handleNewChatClick}
-                />
-              </Animated.View>
-            </View>
-          </Modal>
-        )}
 
         {localUser?.getBlockedByMe() ? (
           <View
@@ -729,18 +637,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
 
-});
-
-const drawerStyles = StyleSheet.create({
-  backdrop: {
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-  },
-  drawer: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-  },
 });
 
 export default Messages;
